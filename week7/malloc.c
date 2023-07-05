@@ -65,6 +65,7 @@ void my_remove_from_free_list(my_metadata_t *metadata, my_metadata_t *prev, int 
 //
 
 // This is called at the beginning of each challenge.
+// 異なるサイズのメモリ領域を管理するために、5つのヒープを用意する。
 void my_initialize() {
   for (int i = 0 ; i < 5 ; i++){
     my_heap[i].free_head = &my_heap[i].dummy;
@@ -72,6 +73,7 @@ void my_initialize() {
     my_heap[i].dummy.next = NULL;
   }
 }
+
 
 int my_get_bin_idx(size_t size) {
   return size / 1000;
@@ -81,6 +83,9 @@ int my_get_bin_idx(size_t size) {
 // |size| is guaranteed to be a multiple of 8 bytes and meets 8 <= |size| <=
 // 4000. You are not allowed to use any library functions other than
 // mmap_from_system() / munmap_to_system().
+//  まず、my_get_bin_idx()を用いて、sizeに対応するヒープのインデックスを取得する。
+//  ヒープのfree_headを取得する。
+// free_headから順番に、sizeに対応するメモリ領域を探す。
 void *my_malloc(size_t size) {
   int idx = my_get_bin_idx(size);
 
